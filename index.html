@@ -2,14 +2,25 @@
 <html>
 <head>
 <title>Chess Steganography</title>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 </head>
 <body>
+<div class="container">
 <h1>Chess Steganography</h1>
 
-<textarea id="data"></textarea>
-<button id="steg">Steg &raquo;</button>
-<textarea id="pgn"></textarea>
-<button id="unsteg">Unsteg &laquo;</button>
+<p>This is a tool to encode/decode data in chess games.</p>
+
+<div class="row">
+<div class="col-md-6">
+<button class="btn btn-primary" id="steg">Steg &raquo;</button>
+<textarea class="form-control" id="data" placeholder="Data..."></textarea>
+</div>
+<div class="col-md-6">
+<button class="btn btn-primary" id="unsteg">Unsteg &laquo;</button>
+<textarea class="form-control" id="pgn" placeholder="Chess game PGN..."></textarea>
+</div>
+</div>
+</div>
 
 <script src="js/jquery-3.3.1.min.js"></script>
 <script src="js/chess.js"></script>
