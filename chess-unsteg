@@ -8,8 +8,11 @@ use Chess::Rep;
 use Storable qw(dclone);
 
 my $pgn = join('', <>);
-$pgn =~ s/ \d-\d.*//; # delete the resignation text
+$pgn =~ s/\[[^\]]*\]//g; # delete game info
+$pgn =~ s/ \d-\d.*//; # delete the result text
+$pgn =~ s/{[^}]*}//g; # delete comments
 $pgn =~ s/\d+\. //g; # delete move numbers
+$pgn =~ s/^\s*//g; # delete leading whitespace
 
 my @game_moves = split /\s+/, $pgn;
 
