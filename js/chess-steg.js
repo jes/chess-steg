@@ -61,10 +61,8 @@ function legal_moves(game) {
 
     let moves = [];
     for (let i = 0; i < all_moves.length; i++) {
-        game.move(all_moves[i]);
-        if (!game.game_over())
+        if (all_moves[i].slice(-1) != '#')
             moves.push(all_moves[i]);
-        game.undo();
     }
 
     return moves;
