@@ -17,7 +17,14 @@ function chess_steg(data) {
         game.move(moves[pickmove]);
     }
 
-    return game.pgn();
+    var pgn = game.pgn();
+    if (game.turn() == 'b') {
+        pgn += " 0-1 {Black resigns}";
+    } else {
+        pgn += " 1-0 {White resigns}";
+    }
+
+    return pgn;
 }
 
 function chess_unsteg(pgn) {
