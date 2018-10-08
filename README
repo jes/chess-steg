@@ -1,1 +1,7 @@
 This is a tool to encode/decode short messages as chess games.
+
+Typically gets about 0.5 bytes per ply. (which is what we'd expect: 0.5 bytes = 4 bits, or 16 possible moves).
+
+Too slow and unwieldy for large content, but I believe it technically has no limit on the amount of data
+it can encode as it ignores draw by repetition and the 50 move rule. Perhaps it can break in some situation
+where a player is left with playing a checkmate as his only legal move?
