@@ -1,0 +1,94 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Math::BigInt;
+
+use Chess::Rep;
+use Storable qw(dclone);
+
+my $pgn = join('', <>);
+$pgn =~ s/ \d-\d.*//; # delete the resignation text
+$pgn =~ s/\d+\. //g; # delete move numbers
+
+my @game_moves = split /\s+/, $pgn;
+
+my $numdata = Math::BigInt->new(0);
+
+my $game = Chess::Rep->new();
+my @selected_moves;
+while (@game_moves) {
+    my @moves = legal_moves($game);
+    my $pickedmove = shift @game_moves;
+
+    my $idx = 0;
+    for my $i (0 .. $#moves) {
+        if (move_to_san($game, $moves[$i]) eq $pickedmove) {
+            $idx = $i;
+            last;
+        }
+    }
+
+    push @selected_moves, [$idx, scalar @moves];
+
+    $game->go_move($pickedmove);
+}
+
+for my $m (reverse @selected_moves) {
+    my ($idx, $N) = @$m;
+    $numdata->bmuladd($N, $idx);
+}
+
+while ($numdata > 1) {
+    my $c = $numdata%256;
+    $numdata = ($numdata-$c) / 256;
+    print chr($c);
+}
+
+sub legal_moves {
+    my ($game) = @_;
+
+    my $player = $game->to_move ? 'w' : 'b';
+    my @moves = @{ $game->status->{moves} };
+    my @san_moves;
+
+    my @legal_moves;
+
+    for my $m (@moves) {
+        # XXX: why are these returned in uppercase when Chess::Rep doesn't accept uppercase??
+        my $from = lc Chess::Rep::get_field_id($m->{from});
+        my $to = lc Chess::Rep::get_field_id($m->{to});
+
+        my $newgame = dclone($game);
+        $newgame->go_move("$from-$to");
+
+        # don't accept moves that end the game
+        next if $newgame->status->{mate} || $newgame->status->{stalemate};
+
+        push @legal_moves, "$from-$to";
+    }
+
+    return sort { $a cmp $b } @legal_moves;
+}
+
+sub move_to_san {
+    my ($game, $move) = @_;
+
+    my $newgame = dclone($game);
+    my $san = $newgame->go_move($move)->{san};
+
+    my ($from, $to) = split /-/, $move;
+
+    # if this is a pawn moving to the final rank, promote it
+    if ($to =~ /[81]/ && ($newgame->get_piece_at($to) & 0x1)) {
+        my $append = '';
+        $append = '#' if $san =~ /#/;
+        $append = '+' if $san =~ /\+/;
+        $san =~ s/[#+]//;
+
+        # promote a pawn to a queen
+        return "$san=Q$append";
+    } else {
+        return $san;
+    }
+}

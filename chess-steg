@@ -1,0 +1,96 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Math::BigInt;
+
+use Chess::Rep;
+use Storable qw(dclone);
+
+my @bytes = split //, join('', <>);
+my $numin = Math::BigInt->new(1); # start at 1 so that leading zero bytes are not lost
+
+for my $c (reverse @bytes) {
+    $numin->bmuladd(256, ord($c));
+}
+
+# $numin is now a bignum representing the input data
+
+my $nmoves = 0;
+
+my $game = Chess::Rep->new();
+while ($numin > 0) {
+    my @moves = legal_moves($game);
+
+    my $pickmove = $numin % @moves;
+    $numin->bsub($pickmove);
+    $numin->bdiv(scalar @moves);
+
+    my $move = move_to_san($game, $moves[$pickmove]);
+
+    if ($game->to_move) {
+        # white to play, new move begins
+        $nmoves++;
+        print "$nmoves. ";
+    }
+
+    $game->go_move($move);
+
+    print "$move ";
+}
+
+if ($game->to_move) {
+    # white to play, resigns
+    print "0-1 {White resigns}\n"
+} else {
+    # black to play, resigns
+    print "1-0 {Black resigns}\n"
+}
+
+sub legal_moves {
+    my ($game) = @_;
+
+    my $player = $game->to_move ? 'w' : 'b';
+    my @moves = @{ $game->status->{moves} };
+    my @san_moves;
+
+    my @legal_moves;
+
+    for my $m (@moves) {
+        # XXX: why are these returned in uppercase when Chess::Rep doesn't accept uppercase??
+        my $from = lc Chess::Rep::get_field_id($m->{from});
+        my $to = lc Chess::Rep::get_field_id($m->{to});
+
+        my $newgame = dclone($game);
+        $newgame->go_move("$from-$to");
+
+        # don't accept moves that end the game
+        next if $newgame->status->{mate} || $newgame->status->{stalemate};
+
+        push @legal_moves, "$from-$to";
+    }
+
+    return sort { $a cmp $b } @legal_moves;
+}
+
+sub move_to_san {
+    my ($game, $move) = @_;
+
+    my $newgame = dclone($game);
+    my $san = $newgame->go_move($move)->{san};
+
+    my ($from, $to) = split /-/, $move;
+
+    # if this is a pawn moving to the final rank, promote it
+    if ($to =~ /[81]/ && ($newgame->get_piece_at($to) & 0x1)) {
+        my $append = '';
+        $append = '#' if $san =~ /#/;
+        $append = '+' if $san =~ /\+/;
+        $san =~ s/[#+]//;
+
+        # promote a pawn to a queen
+        return "$san=Q$append";
+    } else {
+        return $san;
+    }
+}
