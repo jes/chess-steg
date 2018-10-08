@@ -1,0 +1,5 @@
+Note that this encoding is not compatible with the javascript one!
+
+It's the same idea, but incompatible for boring implementation reasons. It is also extremely slow and inefficient.
+
+I've only kept the perl version here in case it's useful; I consider the javascript version to be the canonical one.

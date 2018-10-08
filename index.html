@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<title>Chess Steganography</title>
+</head>
+<body>
+<h1>Chess Steganography</h1>
+
+<textarea id="data"></textarea>
+<button id="steg">Steg &raquo;</button>
+<textarea id="pgn"></textarea>
+<button id="unsteg">Unsteg &laquo;</button>
+
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/chess.js"></script>
+<script src="js/BigInteger.min.js"></script>
+<script src="js/chess-steg.js"></script>
+
+<script type="text/javascript">
+$('#steg').click(function() {
+    $('#pgn').val(chess_steg($('#data').val()));
+});
+
+$('#unsteg').click(function() {
+    $('#data').val(chess_unsteg($('#pgn').val()));
+});
+</script>
+</body>
+</html>
