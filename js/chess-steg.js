@@ -9,8 +9,7 @@ function chess_steg(data) {
 
     let game = new Chess();
     while (numin.compare(0) == 1) { // while numin > 0
-        // sort legal moves lexically
-        let moves = game.moves().sort();
+        let moves = legal_moves(game);
 
         let pickmove = numin.mod(moves.length);
         numin = numin.subtract(pickmove).divide(moves.length);
@@ -34,7 +33,7 @@ function chess_unsteg(pgn) {
         }
         pickedmove = pickedmove.san;
 
-        let moves = game.moves().sort();
+        let moves = legal_moves(game);
         let idx;
         for (let i = 0; i < moves.length; i++) {
             if (moves[i] == pickedmove) {
@@ -55,4 +54,18 @@ function chess_unsteg(pgn) {
     }
 
     return data;
+}
+
+function legal_moves(game) {
+    let all_moves = game.moves().sort();
+
+    let moves = [];
+    for (let i = 0; i < all_moves.length; i++) {
+        game.move(all_moves[i]);
+        if (!game.game_over())
+            moves.push(all_moves[i]);
+        game.undo();
+    }
+
+    return moves;
 }
