@@ -5,3 +5,7 @@ Typically gets about 0.5 bytes per ply. (which is what we'd expect: 0.5 bytes = 
 Too slow and unwieldy for large content, but I believe it technically has no limit on the amount of data
 it can encode as it ignores draw by repetition and the 50 move rule. Perhaps it can break in some situation
 where a player is left with playing a checkmate as his only legal move?
+
+This game encodes the text "Hello, world!" (with a trailing endline):
+
+1. f3 h6 2. g4 a5 3. Nh3 e5 4. Nc3 Rh7 5. Nf2 Be7 6. b4 g6 7. h3 f5 8. b5 Ba3 9. Nd5 Kf7 10. Bxa3 f4 11. Ne7 c5 12. Bc1 Nf6 13. a3 1-0 {Black resigns}
