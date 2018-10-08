@@ -1,6 +1,8 @@
 function chess_steg(data) {
     let numin = bigInt(1); // start at 1 so that leading zero bytes are not lost
 
+    data = encode_utf8(data);
+
     for (var i = data.length-1; i >= 0; i--) {
         numin = numin.multiply(256).add(data.charCodeAt(i));
     }
@@ -60,7 +62,7 @@ function chess_unsteg(pgn) {
         data += String.fromCharCode(c);
     }
 
-    return data;
+    return decode_utf8(data);
 }
 
 function legal_moves(game) {
@@ -73,4 +75,12 @@ function legal_moves(game) {
     }
 
     return moves;
+}
+
+function encode_utf8(s) {
+  return unescape(encodeURIComponent(s));
+}
+
+function decode_utf8(s) {
+  return decodeURIComponent(escape(s));
 }
