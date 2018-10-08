@@ -6,6 +6,6 @@ Too slow and unwieldy for large content, but I believe it technically has no lim
 it can encode as it ignores draw by repetition and the 50 move rule. Perhaps it can break in some situation
 where a player is left with playing a checkmate as his only legal move?
 
-This game encodes the text "Hello, world!" (with a trailing endline):
+This game encodes the text "Hello, world!":
 
-1. f3 h6 2. g4 a5 3. Nh3 e5 4. Nc3 Rh7 5. Nf2 Be7 6. b4 g6 7. h3 f5 8. b5 Ba3 9. Nd5 Kf7 10. Bxa3 f4 11. Ne7 c5 12. Bc1 Nf6 13. a3 1-0 {Black resigns}
+1. e3 b6 2. b3 Bb7 3. Nf3 Bxf3 4. Bd3 e6 5. h4 g6 6. b4 h5 7. gxf3 c5 8. Bb2 a5 9. Rh3 e5 10. c4 Bh6 11. Be2 Ke7
