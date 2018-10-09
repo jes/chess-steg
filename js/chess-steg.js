@@ -21,9 +21,9 @@ function chess_steg(data) {
 
     var pgn = game.pgn();
     if (game.turn() == 'b') {
-        pgn += " 1-0 {Black resigns}";
+        pgn += " { Black resigns. } 1-0";
     } else {
-        pgn += " 0-1 {White resigns}";
+        pgn += " { White resigns. } 0-1";
     }
 
     return pgn;
