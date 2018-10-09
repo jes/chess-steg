@@ -1,11 +1,13 @@
 This is a tool to encode/decode short messages as chess games.
 
-Typically gets about 0.5 bytes per ply. (which is what we'd expect: 0.5 bytes = 4 bits, or 16 possible moves).
-
 Too unwieldy for large content, but I believe it technically has no limit on the amount of data
 it can encode as it ignores draw by repetition and the 50 move rule. Perhaps it can break in some situation
 where a player is left with playing a checkmate as his only legal move?
 
 This game encodes the text "Hello, world!":
 
-1. e3 b6 2. b3 Bb7 3. Nf3 Bxf3 4. Bd3 e6 5. h4 g6 6. b4 h5 7. gxf3 c5 8. Bb2 a5 9. Rh3 e5 10. c4 Bh6 11. Be2 Ke7
+1. e3 b6 2. b3 Bb7 3. Nf3 Bxf3 4. Bd3 e6 5. h4 g6 6. b4 h5 7. gxf3 c5 8. Bb2 a5 9. Rh3 e5 10. c4 Bh6 11. Be2 Ke7 { White resigns. } 0-1
+
+More information in my blog post: https://incoherency.co.uk/blog/stories/chess-steg.html
+
+Please email james@incoherency.co.uk if you want.
