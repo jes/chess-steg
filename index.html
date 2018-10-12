@@ -14,10 +14,12 @@
 <div class="row">
 <div class="col-md-6">
 <button class="btn btn-primary" id="steg">Steg &raquo;</button>
+<button class="btn btn-primary" id="stegb">Steg without blunders &raquo;</button>
 <textarea rows="10" class="form-control" id="data" placeholder="Data..."></textarea>
 </div>
 <div class="col-md-6">
 <button class="btn btn-primary" id="unsteg">Unsteg &laquo;</button>
+<button class="btn btn-primary" id="unstegb">Unsteg without blunders &laquo;</button>
 <textarea rows="10" class="form-control" id="pgn" placeholder="Chess game PGN..."></textarea>
 </div>
 </div>
@@ -37,8 +39,16 @@ $('#steg').click(function() {
     $('#pgn').val(chess_steg($('#data').val()));
 });
 
+$('#stegb').click(function() {
+    $('#pgn').val(chess_steg($('#data').val(), true));
+});
+
 $('#unsteg').click(function() {
     $('#data').val(chess_unsteg($('#pgn').val()));
+});
+
+$('#unstegb').click(function() {
+    $('#data').val(chess_unsteg($('#pgn').val(), true));
 });
 </script>
 </body>
