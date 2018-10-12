@@ -102,7 +102,7 @@ function reasonable_moves(game) {
 
     // keep moves that are not too much worse than the best move (20 points = 1 pawn)
     for (var i = 1; i < moves.length; i++) {
-        if (moves[0][1] - moves[i][1] > 40) {
+        if (moves[0][1] - moves[i][1] > 10) {
             break;
         }
 
