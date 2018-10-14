@@ -1,22 +1,47 @@
-function chess_steg(data, use_engine) {
-    let numin = bigInt(1); // start at 1 so that leading zero bytes are not lost
+function data2bignum(data) {
+    let n = bigInt(1); // start at 1 so that leading zero bytes are not lost
 
     data = encode_utf8(data);
 
     for (var i = data.length-1; i >= 0; i--) {
-        numin = numin.multiply(256).add(data.charCodeAt(i));
+        n = n.multiply(256).add(data.charCodeAt(i));
     }
 
-    // numin is now a bignum representing the input data
+    return n;
+}
+
+function bignum2data(n) {
+    let data = '';
+
+    while (n.compare(1) == 1) { // while n > 1
+        let c = n.mod(256);
+        n = n.subtract(c).divide(256);
+        data += String.fromCharCode(c);
+    }
+
+    return decode_utf8(data);
+}
+
+function chess_steg_move(game, numin, use_engine) {
+    let moves = use_engine ? reasonable_moves(game) : legal_moves(game);
+
+    let pickmove = numin.mod(moves.length);
+    numin = numin.subtract(pickmove).divide(moves.length);
+
+    return {
+        numin: numin,
+        move: moves[pickmove],
+    };
+}
+
+function chess_steg(data, use_engine) {
+    let numin = data2bignum(data);
 
     let game = new Chess();
     while (numin.compare(0) == 1) { // while numin > 0
-        let moves = use_engine ? reasonable_moves(game) : legal_moves(game);
-
-        let pickmove = numin.mod(moves.length);
-        numin = numin.subtract(pickmove).divide(moves.length);
-
-        game.move(moves[pickmove]);
+        state = chess_steg_move(game, numin, use_engine);
+        numin = state.numin;
+        game.move(state.move);
     }
 
     var pgn = game.pgn();
@@ -29,6 +54,19 @@ function chess_steg(data, use_engine) {
     return pgn;
 }
 
+function chess_unsteg_move(game, move, numdata, use_engine) {
+    let moves = use_engine ? reasonable_moves(game) : legal_moves(game);
+    let idx;
+    for (let i = 0; i < moves.length; i++) {
+        if (moves[i] == move) {
+            return numdata.multiply(moves.length).add(i);
+            break;
+        }
+    }
+
+    console.log("Illegal move played?? " + move);
+}
+
 function chess_unsteg(pgn, use_engine) {
     let numdata = bigInt(0);
 
@@ -37,32 +75,13 @@ function chess_unsteg(pgn, use_engine) {
 
     while (true) {
         let pickedmove = game.undo();
-        if (pickedmove == undefined) {
+        if (pickedmove == undefined)
             break;
-        }
-        pickedmove = pickedmove.san;
 
-        let moves = use_engine ? reasonable_moves(game) : legal_moves(game);
-        let idx;
-        for (let i = 0; i < moves.length; i++) {
-            if (moves[i] == pickedmove) {
-                idx = i;
-                break;
-            }
-        }
-
-        numdata = numdata.multiply(moves.length).add(idx);
+        numdata = chess_unsteg_move(game, pickedmove.san, numdata, use_engine);
     }
 
-    let data = '';
-
-    while (numdata.compare(1) == 1) { // while numdata > 1
-        let c = numdata.mod(256);
-        numdata = numdata.subtract(c).divide(256);
-        data += String.fromCharCode(c);
-    }
-
-    return decode_utf8(data);
+    return bignum2data(numdata);
 }
 
 function legal_moves(game) {

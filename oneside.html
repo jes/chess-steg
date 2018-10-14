@@ -1,0 +1,178 @@
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/chessboard-0.3.0.min.css">
+</head>
+<body>
+
+<div class="container">
+
+<label><input type="radio" name="colour" value="white"> Play as white</label>&nbsp;&nbsp;&nbsp;
+<label><input type="radio" name="colour" value="black"> Play as black</label>
+
+<div class="row">
+
+<div class="col-md-6">
+<h3>Encode</h3>
+<div id="give-input">
+<button class="btn btn-primary" id="steg">Steg &raquo;</button>
+<button class="btn btn-primary" id="stegb">Steg without blunders &raquo;</button>
+<textarea rows="6" class="form-control" id="data" placeholder="Data..."></textarea>
+</div>
+<div id="play-game" style="display:none">
+<button class="btn btn-danger" id="cancel">Close</button>
+<br>
+<i><span id="status">What was your opponent's move?</span></i>
+<div id="chessboard" style="width:80%"></div>
+<span id="debug"></span>
+</div>
+</div>
+
+<div class="col-md-6">
+<h3>Decode</h3>
+<button class="btn btn-primary" id="unsteg">Unsteg &laquo;</button>
+<button class="btn btn-primary" id="unstegb">Unsteg without blunders &laquo;</button>
+<form target="_blank" action="https://lichess.org/import" method="POST">
+<textarea rows="6" class="form-control" id="pgn" name="pgn" placeholder="Chess game PGN..."></textarea>
+<button class="btn btn-primary" type="submit">View on lichess &raquo;</button>
+</form>
+</div>
+
+</div>
+</div>
+
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/chessboard-0.3.0.min.js"></script>
+<script src="js/chess.js"></script>
+<script src="js/BigInteger.min.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/chess-steg.js"></script>
+
+<script type="text/javascript">
+$('#steg').click(function() { steg(false); });
+$('#stegb').click(function() { steg(true); });
+
+$('#unsteg').click(function() { unsteg(false); });
+$('#unstegb').click(function() { unsteg(true); });
+
+$('#cancel').click(function() {
+    $('#give-input').show();
+    $('#play-game').hide();
+});
+
+let chessboard;
+let chessgame;
+let playing_as;
+let numin;
+
+function steg(use_engine) {
+    $('#give-input').hide();
+    $('#play-game').show();
+
+    playing_as = $('input[name=colour]:checked').val();
+
+    chessgame = new Chess();
+
+    chessboard = ChessBoard('chessboard', {
+        orientation: playing_as,
+        position: 'start',
+        draggable: true,
+        onDragStart: function(source, piece, position, orientation) {
+            // you can't play the computer's moves
+            if (chessgame.turn() == playing_as.charAt(0))
+                return false;
+
+            // you can't move pieces of the wrong colour
+            if (piece.charAt(0) != chessgame.turn())
+                return false;
+
+            // I'll allow it.
+            return true;
+        },
+        onDrop: function(oldpos, newpos, source, piece, position, orientation) {
+            // try to play the move
+            // TODO: pawn promotion
+            let r = chessgame.move({from: oldpos, to: newpos});
+
+            // disallow the move if chess.js doesn't accept it
+            if (r == undefined)
+                return 'snapback';
+
+            $('#pgn').val(chessgame.pgn());
+            if (numin.compare(0) == 1) {
+                $('#status').html("Thinking...");
+
+                // calculate computer move in a timeout so that the
+                // ui can update
+                window.setTimeout(function() {
+                    state = chess_steg_move(chessgame, numin, use_engine);
+                    numin = state.numin;
+                    chessgame.move(state.move);
+                    chessboard.position(chessgame.fen());
+                    $('#status').html("Play <b>" + state.move + "</b>, then tell me how your opponent responds");
+                    $('#pgn').val(chessgame.pgn());
+                    $('#debug').html("Still to encode: " + numin);
+                }, 0);
+            } else {
+                $('#status').html("Finished, " + playing_as + " resigns.");
+                var pgn = chessgame.pgn();
+                if (chessgame.turn() == 'b') {
+                    pgn += " { Black resigns. } 1-0";
+                } else {
+                    pgn += " { White resigns. } 0-1";
+                }
+                $('#pgn').val(pgn);
+            }
+
+            return true;
+        },
+    });
+
+    numin = data2bignum($('#data').val());
+
+    if (playing_as == 'white') {
+        // play our first move
+        state = chess_steg_move(chessgame, numin, use_engine);
+        numin = state.numin;
+        chessgame.move(state.move);
+        chessboard.position(chessgame.fen());
+        $('#status').html("Play <b>" + state.move + "</b>, then tell me hose your opponent responds");
+        $('#pgn').val(chessgame.pgn());
+    } else {
+        // wait for input of first move
+        $('#status').html("Tell me what your opponent played");
+    }
+
+    $('#debug').html("Still to encode: " + numin);
+}
+
+function unsteg(use_engine) {
+    chessgame = new Chess();
+
+    playing_as = $('input[name=colour]:checked').val();
+
+    chessgame.load_pgn($('#pgn').val());
+
+    let numdata = bigInt(0);
+
+    while (true) {
+        let pickedmove = chessgame.undo();
+        // ignore the other player's moves
+        if (chessgame.turn() != playing_as.charAt(0))
+            pickedmove = chessgame.undo();
+        if (pickedmove == undefined)
+            break;
+
+        numdata = chess_unsteg_move(chessgame, pickedmove.san, numdata, use_engine);
+    }
+
+    $('#data').val(bignum2data(numdata));
+
+    $('#give-input').show();
+    $('#play-game').hide();
+}
+
+</script>
+
+</body>
