@@ -8,7 +8,10 @@
 <div class="container">
 <h1>Chess Steganography</h1>
 
-<p>This is a tool to encode/decode data in chess games. It is compatible with lichess's <a href="https://lichess.org/paste">Import Game</a> feature. Available <a href="https://github.com/jes/chess-steg">on github</a>.</p>
+<p>(See also <a href="index.html">the one-sided mode</a>, for when you only control one side's moves).</p>
+
+<p>This is a tool to encode/decode data in chess games. It first encodes the input data as a bignum, and then encodes the bignum in the move choices in the chess game. The "without blunders" mode uses <a href="https://github.com/douglasbagnall/p4wn">p4wn</a> to try to avoid playing bad moves. This mode is less likely to arouse suspicion among actual chess players, but results in longer games.</p>
+
 <p>See <a href="https://incoherency.co.uk/blog/stories/chess-steg.html">my blog post</a> for more information.</p>
 
 <div class="row">
@@ -27,7 +30,8 @@
 </div>
 </div>
 
-<i>By <a href="https://incoherency.co.uk/">James Stanley</a>.</i>
+<i>By <a href="https://incoherency.co.uk/">James Stanley</a>.</i><br>
+<i>Source <a href="https://github.com/jes/chess-steg">on github</a>.</i>
 
 </div>
 

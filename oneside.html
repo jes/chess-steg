@@ -3,18 +3,26 @@
 <head>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="css/chessboard-0.3.0.min.css">
+<title>One-sided Chess Steganography</title>
 </head>
 <body>
 
 <div class="container">
+<h1>One-sided Chess Steganography</h1>
 
+<p>(See also <a href="index.html">the two-sided mode</a>, for when you can control both side's moves).</p>
+
+<p>This is a tool to encode/decode data in chess games. It first encodes the input data as a bignum, and then encodes the bignum in the move choices of one of the players in the game. The "without blunders" mode uses <a href="https://github.com/douglasbagnall/p4wn">p4wn</a> to try to avoid playing bad moves. This mode is less likely to arouse suspicion among actual chess players, but results in longer games.</p>
+
+<p>Compared to the two-sided mode, this one-sided mode results in games that are approximately twice as long, as it can only encode half as much information per move. The advantage is that it can be used when playing a game against an opponent who is not complicit in the steganography.</p>
+
+<p>Make sure to select which side the moves are stored in before clicking the "Steg" or "Unsteg" buttons:<br>
 <label><input type="radio" name="colour" value="white"> Play as white</label>&nbsp;&nbsp;&nbsp;
-<label><input type="radio" name="colour" value="black"> Play as black</label>
+<label><input type="radio" name="colour" value="black"> Play as black</label></p>
 
 <div class="row">
 
 <div class="col-md-6">
-<h3>Encode</h3>
 <div id="give-input">
 <button class="btn btn-primary" id="steg">Steg &raquo;</button>
 <button class="btn btn-primary" id="stegb">Steg without blunders &raquo;</button>
@@ -30,7 +38,6 @@
 </div>
 
 <div class="col-md-6">
-<h3>Decode</h3>
 <button class="btn btn-primary" id="unsteg">Unsteg &laquo;</button>
 <button class="btn btn-primary" id="unstegb">Unsteg without blunders &laquo;</button>
 <form target="_blank" action="https://lichess.org/import" method="POST">
@@ -38,8 +45,11 @@
 <button class="btn btn-primary" type="submit">View on lichess &raquo;</button>
 </form>
 </div>
-
 </div>
+
+<i>By <a href="https://incoherency.co.uk/">James Sanley</a>.</i><br>
+<i>Source <a href="https://github.com/jes/chess-steg">on github</a>.</i>
+
 </div>
 
 <script src="js/jquery-3.3.1.min.js"></script>
