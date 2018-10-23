@@ -147,7 +147,7 @@ function steg(use_engine) {
         numin = state.numin;
         chessgame.move(state.move);
         chessboard.position(chessgame.fen());
-        $('#status').html("Play <b>" + state.move + "</b>, then tell me hose your opponent responds");
+        $('#status').html("Play <b>" + state.move + "</b>, then tell me how your opponent responds");
         $('#pgn').val(chessgame.pgn());
     } else {
         // wait for input of first move
