@@ -73,13 +73,19 @@ function chess_unsteg(pgn, use_engine) {
     let game = new Chess();
     game.load_pgn(pgn);
 
+    let ply = 0;
+
     while (true) {
         let pickedmove = game.undo();
         if (pickedmove == undefined)
             break;
 
         numdata = chess_unsteg_move(game, pickedmove.san, numdata, use_engine);
+        ply++;
     }
+
+    if (ply == 0)
+        throw "No moves found";
 
     return bignum2data(numdata);
 }

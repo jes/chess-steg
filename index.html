@@ -15,6 +15,8 @@
 <p>See <a href="https://incoherency.co.uk/blog/stories/chess-steg.html">my blog post</a> for more information. Also
 check out <a href="https://github.com/Alheimsins/chess-steg-cli">Jonas Enge's CLI implementation</a>.</p>
 
+<span style="color:red; display:none" id="error">Error: invalid input</span>
+
 <div class="row">
 <div class="col-md-6">
 <button class="btn btn-primary" id="steg">Steg &raquo;</button>
@@ -43,20 +45,38 @@ check out <a href="https://github.com/Alheimsins/chess-steg-cli">Jonas Enge's CL
 <script src="js/chess-steg.js"></script>
 
 <script type="text/javascript">
+function trycatch(f) {
+    $('#error').hide();
+    try {
+        f();
+    } catch (e) {
+        $('#error').show();
+        console.log(e.toString());
+    }
+}
+
 $('#steg').click(function() {
-    $('#pgn').val(chess_steg($('#data').val()));
+    trycatch(function() {
+        $('#pgn').val(chess_steg($('#data').val()));
+    });
 });
 
 $('#stegb').click(function() {
-    $('#pgn').val(chess_steg($('#data').val(), true));
+    trycatch(function() {
+        $('#pgn').val(chess_steg($('#data').val(), true));
+    });
 });
 
 $('#unsteg').click(function() {
-    $('#data').val(chess_unsteg($('#pgn').val()));
+    trycatch(function() {
+        $('#data').val(chess_unsteg($('#pgn').val()));
+    });
 });
 
 $('#unstegb').click(function() {
-    $('#data').val(chess_unsteg($('#pgn').val(), true));
+    trycatch(function() {
+        $('#data').val(chess_unsteg($('#pgn').val(), true));
+    });
 });
 </script>
 </body>
