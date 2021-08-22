@@ -10,4 +10,6 @@ This game encodes the text "Hello, world!":
 
 More information in my blog post: https://incoherency.co.uk/blog/stories/chess-steg.html
 
+There is also now a (incompatible) Scala implementation of the same idea by someone called "carpetscheme": https://github.com/carpetscheme/scalachess-steg/
+
 Please email james@incoherency.co.uk if you want.
